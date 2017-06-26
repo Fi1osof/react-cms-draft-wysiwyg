@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import Option from '../../components/Option';
 import styles from './styles.css'; // eslint-disable-line no-unused-vars
 
+import Cropper from './Cropper';
+
 const getImageComponent = (config) => class Image extends Component {
   static propTypes: Object = {
     block: PropTypes.object,
@@ -13,7 +15,15 @@ const getImageComponent = (config) => class Image extends Component {
 
   state: Object = {
     hovered: false,
+    cropperOpened: false,
   };
+
+  constructor(props){
+
+    console.log('Image constructor', config, props);
+
+    super(props);
+  }
 
   setEntityAlignmentLeft: Function = (): void => {
     this.setEntityAlignment('left');
@@ -79,12 +89,61 @@ const getImageComponent = (config) => class Image extends Component {
     );
   }
 
+  startEdit = () => {
+    const { block, contentState } = this.props;
+    console.log('startEdit', block, contentState);
+
+    const entity = contentState.getEntity(block.getEntityAt(0));
+    const { src, alignment, height, width } = entity.getData();
+
+    console.log('startEdit entity data', { src, alignment, height, width });
+
+    this.setState({
+      cropperOpened: true,
+    });
+  }
+
+  renderCropper(cropperOpened){
+
+    // let {cropperOpened} = this.state;
+
+    return <div>
+      <div
+        onTouchTap={() => {
+          this.setCropperOpened(true);
+        }}
+      >
+        Edit  
+      </div>
+
+    </div>
+  }
+
+
+  setCropperOpened = (cropperOpened) => {
+    const { block, contentState } = this.props;
+    // const entityKey = block.getEntityAt(0);
+    // contentState.mergeEntityData(
+    //   entityKey,
+    //   { cropperOpened },
+    // );
+    // config.onChange(EditorState.push(config.getEditorState(), contentState, 'change-block-data'));
+    // this.forceUpdate();
+
+    console.log('config', config);
+
+    let { imageEditorToggle } = config;
+
+    imageEditorToggle(block);
+  };
+
   render(): Object {
     const { block, contentState } = this.props;
     const { hovered } = this.state;
     const { isReadOnly, isImageAlignmentEnabled } = config;
     const entity = contentState.getEntity(block.getEntityAt(0));
     const { src, alignment, height, width } = entity.getData();
+
 
     return (
       <span
@@ -111,6 +170,12 @@ const getImageComponent = (config) => class Image extends Component {
           {
             !isReadOnly() && hovered && isImageAlignmentEnabled() ?
               this.renderAlignmentOptions(alignment)
+              :
+              undefined
+          }
+          {
+            !isReadOnly() ?
+              this.renderCropper()
               :
               undefined
           }

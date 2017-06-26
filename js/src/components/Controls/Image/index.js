@@ -48,6 +48,9 @@ class ImageControl extends Component {
   };
 
   doCollapse: Function = (): void => {
+
+    console.log('doCollapse', this);
+
     this.setState({
       expanded: false,
     });
@@ -80,7 +83,7 @@ class ImageControl extends Component {
         expanded={expanded}
         onExpandEvent={this.onExpandEvent}
         doExpand={this.doExpand}
-        doCollpase={this.doCollpase}
+        doCollapse={this.doCollapse}
       />
     );
   }

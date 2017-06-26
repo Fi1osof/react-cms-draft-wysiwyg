@@ -35,6 +35,8 @@ import localeTranslations from '../../i18n';
 import './styles.css';
 import '../../../../css/Draft.css';
 
+import Cropper from '../../Renderer/Image/Cropper';
+
 export default class WysiwygEditor extends Component {
 
   static propTypes = {
@@ -96,6 +98,7 @@ export default class WysiwygEditor extends Component {
     this.state = {
       editorState: undefined,
       editorFocused: false,
+      cropperOpened: false,
       toolbar,
     };
     this.wrapperId = `rdw-wrapper${Math.floor(Math.random() * 10000)}`;
@@ -106,6 +109,7 @@ export default class WysiwygEditor extends Component {
       isImageAlignmentEnabled: this.isImageAlignmentEnabled,
       getEditorState: this.getEditorState,
       onChange: this.onChange,
+      imageEditorToggle: this.imageEditorToggle,
     }, props.customBlockRenderFunc);
     this.editorProps = this.filterEditorProps(props);
     this.customStyleMap = getCustomStyleMap();
@@ -158,6 +162,15 @@ export default class WysiwygEditor extends Component {
     this.setState(newState);
     this.editorProps = this.filterEditorProps(props);
     this.customStyleMap = getCustomStyleMap();
+  }
+
+  imageEditorToggle = (block) => {
+    console.log('imageEditorToggle', block);
+
+    this.setState({
+      cropperOpened: !this.state.cropperOpened,
+      croppingBlock: block,
+    });
   }
 
   onEditorBlur: Function = (): void => {
@@ -396,7 +409,7 @@ export default class WysiwygEditor extends Component {
       translations: { ...localeTranslations[locale || newLocale], ...translations },
     }
 
-    return (
+    return <div>
       <div
         id={this.wrapperId}
         className={classNames('rdw-editor-wrapper', wrapperClassName)}
@@ -455,7 +468,23 @@ export default class WysiwygEditor extends Component {
           />
         </div>
       </div>
-    );
+
+      {this.state.cropperOpened ? 
+        <Cropper 
+          open={true}
+          onRequestClose={this.imageEditorToggle}
+          editorState={editorState}
+          croppingBlock={this.state.croppingBlock}
+          onChange={(newEditorState) => {
+            this.onChange(newEditorState);
+            this.forceUpdate();
+            this.setState({
+              foo: new Date().getTime(),
+            });
+          }}
+        /> 
+      : null}
+    </div>;
   }
 }
 // todo: evaluate draftjs-utils to move some methods here

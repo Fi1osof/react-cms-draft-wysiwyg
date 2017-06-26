@@ -28,6 +28,14 @@ class LayoutComponent extends Component {
     width: this.props.config.defaultSize.width,
   };
 
+  constructor(props){
+
+    super(props);
+
+    console.log('constructor props', props);
+    console.log('constructor state', this.state);
+  }
+
   componentWillReceiveProps(props: Object): void {
     if (this.props.expanded && !props.expanded) {
       this.setState({
